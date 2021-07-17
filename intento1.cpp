@@ -19,7 +19,8 @@ class Mascota{
 		Mascota *cabeza;
 		void insertarLista(Mascota *&); //create
 		void mostrarLista(Mascota *);	//read
-		void guardarLista(Mascota *);	
+		void guardarLista(Mascota *);
+		void guardarListaaux(Mascota *);	
 		void modificarNodo(Mascota *);	//update
 		void eliminarNodo(Mascota *);	//delete
 		void leerLista(Mascota *&);
@@ -39,6 +40,7 @@ class Veterinarios{
 		void insertarLista(Veterinarios *&); //create
 		void mostrarLista(Veterinarios *);	//read
 		void guardarLista(Veterinarios *);	
+		void guardarListaaux(Veterinarios *);	
 		void modificarNodo(Veterinarios *);	//update
 		void eliminarNodo(Veterinarios *);	//delete
 		void leerLista(Veterinarios *&);
@@ -50,8 +52,8 @@ class Veterinarios{
 };
 class Diagnostico{
 	private:
-		Mascota *m;
-		Veterinarios *v;
+		int codigo;
+		int CI;
 		float peso;
 		float presion;
 		float temperatura;
@@ -73,7 +75,7 @@ class Diagnostico{
 };
 
 int main(){
-	Mascota *lista = NULL;
+	Mascota *lista = NULL;	//mascotas
 	lista=new(Mascota);
 	lista->leerLista(lista);
 	int opcion;
@@ -127,7 +129,7 @@ int main(){
 			cout<<("\nSeleccione una opcion valida");
 		}
 	} while (opcion != 6);
-	Veterinarios *lista2 = NULL;
+	Veterinarios *lista2 = NULL; //veterinarios
 	lista2=new(Veterinarios);
 	lista2->leerLista(lista2);
 	do{
@@ -182,14 +184,9 @@ int main(){
 			cout<<("\nSeleccione una opcion valida");
 		}
 	} while (opcion != 6);
-	Diagnostico *lista3 = NULL;
+	Diagnostico *lista3 = NULL; //diagnosticos
 	lista3=new(Diagnostico);
-	lista3->m=new(Mascota);
-	lista3->m=lista;
-	lista3->v=new(Veterinarios);
-	lista3->v=lista2;
 	lista3->leerLista(lista3);
-	
 	do{
 		system("cls");
 
@@ -256,7 +253,7 @@ void Mascota::insertarLista(Mascota *&lista){
 		cout<<("\nIngrese el codigo de la mascota: ");
 
 		scanf("%d", &MascotaNuevo->codigo);
-
+		
 		bandera = compararcodigo(MascotaNuevo->codigo);
 	} while (bandera);
 	cout<<("\nIngrese el nombre de la mascota: ");
@@ -297,7 +294,7 @@ void Mascota::mostrarLista(Mascota *lista){
 }
 void Mascota::guardarLista(Mascota *lista){
 	int linea = 0;
-	ofstream write_fich("ReyesAdeber9.txt");
+	ofstream write_fich("Mascota.txt");
 	if (!write_fich){
 		cout <<("\nOcurrio un error al generar la lista");
 	}else{
@@ -323,6 +320,32 @@ void Mascota::guardarLista(Mascota *lista){
 		}
 	}
 	write_fich.close();
+	
+}
+void Mascota::guardarListaaux(Mascota *lista){
+	int linea = 0;
+	ofstream write_fich("Diagnosticos.txt");
+	if (!write_fich){
+		cout <<("\nOcurrio un error al generar la lista");
+	}else{
+		while (lista != NULL){
+			if (linea == 0){
+				write_fich << lista->codigo << " ";
+				linea++;
+			}
+			else if (linea != 0){
+				if (linea == 1){
+					write_fich << lista->codigo << " ";
+					linea++;
+				}else{
+					write_fich << "\n"
+							   << lista->codigo << " ";
+			}
+			lista = lista->sig;
+		}
+	}
+	write_fich.close();
+}
 }
 void Mascota::modificarNodo(Mascota *Lista){
 	bool bandera = false;
@@ -613,7 +636,7 @@ void Veterinarios::mostrarLista(Veterinarios *lista){
 }
 void Veterinarios::guardarLista(Veterinarios *lista){
 	int linea = 0;
-	ofstream write_fich("veterianrios.txt");
+	ofstream write_fich("Veterianrios.txt");
 	if (!write_fich){
 		cout <<("\nOcurrio un error al generar la lista");
 	}else{
@@ -638,7 +661,34 @@ void Veterinarios::guardarLista(Veterinarios *lista){
 		}
 	}
 	write_fich.close();
+	
 }
+void Veterinarios::guardarListaaux(Veterinarios *lista){
+	int linea = 0;
+	ofstream write_fich("Diagnosticos.txt");
+	if (!write_fich){
+		cout <<("\nOcurrio un error al generar la lista");
+	}else{
+		while (lista != NULL){
+			if (linea == 0){
+				write_fich << lista->CI << " \n";
+				linea++;
+			}
+			else if (linea != 0){
+				if (linea == 1){
+					write_fich << lista->CI << " ";
+					linea++;
+				}else{
+					write_fich << "\n"
+							   << lista->CI << " ";
+				}
+			}
+			lista = lista->sig;
+		}
+	}
+	write_fich.close();
+}
+	
 void Veterinarios::modificarNodo(Veterinarios *Lista){
 	bool bandera = false;
 	bool bandera2 = false;
@@ -873,37 +923,33 @@ int Veterinarios::validarNumero(){
 	} while (!entrada_valida);
 	return numero;
 }
-void Diagnostico::insertarLista(Diagnostico *&lista){
+void Diagnostico::insertarLista(Diagnostico *&lista3){
 	bool bandera = false;
 	Diagnostico *diagNuevo = (Diagnostico *)malloc(sizeof(Diagnostico));
-	diagNuevo->m=new(Mascota);
-	diagNuevo->v=new(Veterinarios);
 	if (!diagNuevo){
-		lista->error();
+		lista3->error();
 	}
 	Diagnostico *aux;
 	cout<<("\n\t\tInsertar nuevo registro\n\n");
 	do{
 		cout<<("\nIngrese el codigo del animal a tratar: ");
-
-		scanf("%d", &diagNuevo->m->codigo);
-
-		bandera = compararcodigo(diagNuevo->m->codigo);
+		scanf("%d", &diagNuevo->codigo);
+		bandera = compararcodigo(diagNuevo->codigo);
 	} while (bandera);
-	cout<<("\nIngrese el nombre del veterinario: ");
+	cout<<("\nIngrese el peso del animal: ");
 	scanf("%f", &diagNuevo->peso);
-	cout<<("\nIngrese el nombre del veterinario: ");
+	cout<<("\nIngrese la presion del animal: ");
 	scanf("%f", &diagNuevo->presion);
-	cout<<("\nIngrese el nombre del veterinario: ");
+	cout<<("\nIngrese la temperatura del animal: ");
 	scanf("%f", &diagNuevo->temperatura);
-	cout<<("\nIngrese el nombre del veterinario: ");
+	cout<<("\nIngrese el diagnostico del animal: ");
 	scanf("%s", &diagNuevo->diagnostico);
 	diagNuevo->sig = NULL;
-	if (lista == NULL){
-		lista = diagNuevo;
+	if (lista3 == NULL){
+		lista3 = diagNuevo;
 		cabeza = diagNuevo;
 	}else{
-		aux = lista;
+		aux = lista3;
 
 		while (aux->sig != NULL)
 		{
@@ -925,7 +971,7 @@ void Diagnostico::mostrarLista(Diagnostico *lista){
 	cout <<("\n|| Codigo |  Nombre |   Peso  |  Presion  | Temperatura  | Diagnostico ||");
 	cout << "\n============================" << endl;
 	while (lista != NULL){
-		printf("\t%d  %s   %f    %f   %f   %s\n", lista->codigo, lista->nom,lista->peso,lista->presion,lista->temperatura,lista->diagnostico);
+		printf("\t%d  %s   %f    %f   %f   %s\n", lista->codigo, lista->CI,lista->peso,lista->presion,lista->temperatura,lista->diagnostico);
 		lista = lista->sig;
 	}
 	cout << "============================" << endl;
@@ -938,8 +984,8 @@ void Diagnostico::guardarLista(Diagnostico *lista){
 	}else{
 		while (lista != NULL){
 			if (linea == 0){
-				write_fich << lista->CI << " ";
-				write_fich << lista->nom << "  \n";
+				write_fich << lista->codigo << " ";
+				write_fich << lista->CI << "  \n";
 				write_fich << lista->peso << "  \n";
 				write_fich << lista->presion << "  \n";
 				write_fich << lista->temperatura << "  \n";
@@ -952,9 +998,9 @@ void Diagnostico::guardarLista(Diagnostico *lista){
 					linea++;
 				}else{
 					write_fich << "\n"
-							   << lista->CI << " ";
+							   << lista->codigo<< " ";
 				}
-				write_fich << lista->nom<< " ";
+				write_fich << lista->CI<< " ";
 				write_fich << lista->peso << "  \n";
 				write_fich << lista->presion << "  \n";
 				write_fich << lista->temperatura << "  \n";
@@ -1082,8 +1128,8 @@ void Diagnostico::buscarRegistro(Diagnostico *Lista){
 			{
 				contador++;
 			}
-			printf("\nNombre: %s", actual->nom);
-			printf("\nCodigo: %d", actual->codigo);
+			printf("\nCI Responsable: %s", actual->CI);
+			printf("\nCodigo de la mascota: %d", actual->codigo);
 			printf("\n Peso:  %f", actual->peso);
 			printf("\n Presion:  %f", actual->presion);
 			printf("\n temperatura:  %f", actual->temperatura);
